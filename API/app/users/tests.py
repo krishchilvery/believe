@@ -1,5 +1,8 @@
 from django.test import TestCase
+from django.urls import reverse
 from django.contrib.auth import get_user_model
+from rest_framework.test import APITestCase
+from rest_framework import status
 
 # Create your tests here.
 
@@ -34,3 +37,15 @@ class UserManagerTests(TestCase):
             pass
         with self.assertRaises(ValueError):
             User.objects.create_superuser(email='super@user.com', password="foo", is_superuser=False)
+
+class UserProfileDetailViewTest(APITestCase):
+
+    def setUp(self):
+        User = get_user_model()
+        user = User.objects.create_user(email="test@test.com", password="foo")
+        self.client.force_login(user)
+
+    def test_get_profile(self):
+        url = reverse('users:profile')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

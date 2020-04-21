@@ -23,3 +23,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = _('user')
         verbose_name_plural = _('users')
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    first_name = models.CharField(_('first name'), max_length=30)
+    last_name = models.CharField(_('last name'), max_length=30)
+    designation = models.CharField(_('designation'), max_length=30)
+    location = models.CharField(_('location'), max_length=30)
+    updated_on = models.DateTimeField(_('last updated'), auto_now=True)
+    is_admin = models.BooleanField(_('admin'), default=False)
+
+    def __str__(self):
+        return self.first_name + " " + self.last_name
