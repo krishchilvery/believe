@@ -3,7 +3,7 @@ import config from '../assets/ApiConfig'
 import axios from 'axios'
 import cookies from 'react-cookies'
 import { useDispatch } from 'react-redux'
-import { setIsLoggedIn } from './authSlice'
+import { setIsLoggedIn, setIsAdmin } from './authSlice'
 
 // LOGIN SECTION
 
@@ -14,6 +14,15 @@ export const getAccessToken = async (email, password) => {
     'password': password
   }
   return await axios.post(url, data)
+}
+
+export const getUserRole = async () => {
+  const url = config.url.API_URL + '/users/me/role'
+  const access_token = getAccessTokenFromCookie()
+  const headers = {
+    'Authorization': 'Bearer '+access_token
+  }
+  return await axios.get(url, {headers: headers})
 }
 
 export const saveAccessToken = (access, refresh) => {
@@ -126,10 +135,16 @@ export default function CheckIsLoggedIn(props){
   const checkIsLoggedIn = ()=>{
     if(checkAccessToken()){
       dispatch(setIsLoggedIn(true))
+      getUserRole().then((response) => {
+        dispatch(setIsAdmin(false))
+      }).catch((error)=>{
+        dispatch(setIsAdmin(false))
+        dispatch(setIsLoggedIn(false))
+      })
     }else if(checkRefreshToken()){
       refreshTokenService().then((response) => {
-        cookies.save("access_token", response.data.access, {path: '/', maxAge:3600});
-        dispatch(setIsLoggedIn(true));
+        cookies.save("access_token", response.data.access, {path: '/', maxAge:3600})
+        dispatch(setIsLoggedIn(true))
       }).catch((error)=>{
         dispatch(setIsLoggedIn(false))
       });

@@ -1,9 +1,9 @@
 import React from "react"
 import { Modal, Menu, Segment, Form, Input, Message } from "semantic-ui-react";
 import { connect } from "react-redux";
-import { setShowAuthModal, setIsLoggedIn } from "./authSlice";
+import { setShowAuthModal, setIsLoggedIn, setIsAdmin } from "./authSlice";
 import './AuthModal.css'
-import { getAccessToken, saveAccessToken, createUserAccount } from "./AuthUtils";
+import { getAccessToken, saveAccessToken, createUserAccount, getUserRole } from "./AuthUtils";
 
 function mapStateToProps(state){
   const showAuthModal = state.auth.showAuthModal;
@@ -44,8 +44,14 @@ class AuthModal extends React.Component{
     if(this.props.type === "login"){
       getAccessToken(this.state.email, this.state.password).then((response) => {
         saveAccessToken(response.data.access, response.data.refresh);
-        this.handleClose();
-        this.props.dispatch(setIsLoggedIn(true));
+        this.handleClose()
+        this.props.dispatch(setIsLoggedIn(true))
+        getUserRole().then((response) => {
+          this.props.dispatch(setIsAdmin(response.data.is_admin))
+        }).catch((error) => {
+          this.props.dispatch(setIsAdmin(false))
+          this.props.dispatch(setIsLoggedIn(false))
+        })
       }).catch((error) => {
         this.handleLoginError(error.response.data.detail)
       })
@@ -86,7 +92,6 @@ class AuthModal extends React.Component{
           error={this.state.loginError}
           success={this.state.loginSuccess}
           onSubmit={this.handleSubmit}
-          size="big"
         >
           <Form.Input
             name="email"
@@ -115,7 +120,6 @@ class AuthModal extends React.Component{
             content={this.state.loginSuccessMessage}
           />
           <Form.Button
-            size="big"
             content="Submit"
           />
         </Form>
@@ -127,7 +131,6 @@ class AuthModal extends React.Component{
       <Form 
           error={this.state.registerError} 
           onSubmit={this.handleSubmit}
-          size="big"
         >
           <Form.Input
             name="email"
@@ -173,7 +176,6 @@ class AuthModal extends React.Component{
             content={this.state.registerErrorMessage}
           />
           <Form.Button
-            size="big"
             content="Submit"
           />
         </Form>

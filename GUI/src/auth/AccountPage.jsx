@@ -1,8 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Message, Form, Segment, Input, Button, Modal, Header } from "semantic-ui-react";
+import { Message, Form, Segment, Input, Button } from "semantic-ui-react";
 import { getUserProfile, changeUserProfile } from "./AuthUtils";
-import { setShowAuthModal } from "./authSlice";
+import { Redirect } from "react-router-dom";
 
 const mapStateToProps = (state) => {
   const isLoggedIn = state.auth.isLoggedIn;
@@ -12,7 +12,7 @@ const mapStateToProps = (state) => {
 }
 
 class AccountPage extends React.Component{
-  //TODO Give users an option to edit profile.
+  //TODO Implement ChangeModal
   //TODO Implement Error
   constructor(props){
     super(props)
@@ -38,18 +38,11 @@ class AccountPage extends React.Component{
   componentDidMount = ()=>{
     if(this.props.isLoggedIn){
       this.getProfileData();
-    }else{
-      this.setState({authUpdate: true})
-    }
-  }
-
-  componentDidUpdate = ()=>{
-    if(this.state.authUpdate){
-      this.getProfileData();
     }
   }
 
   getProfileData = () => {
+    console.log("called")
     getUserProfile().then((response) => {
       let data = this.initialState
       data.email = response.data.user
@@ -61,6 +54,7 @@ class AccountPage extends React.Component{
       data.profileFormLoading = false
       this.setState(data)
     }).catch((error) => {
+      //#TODO Implement Error
       console.log(error)
     })
   }
@@ -100,6 +94,7 @@ class AccountPage extends React.Component{
         this.setState(this.initialState)
       }, 5000)
     }).catch((error) => {
+      //TODO IMPLEMENT ERROR 
       console.log(error)
     })
   }
@@ -107,6 +102,7 @@ class AccountPage extends React.Component{
   handleChange = (e, { name, value}) => this.setState({ [name]: value})
 
   handleChangeEmail = (e) => {
+    //TODO IMPLEMENT EMAIL
     console.log("This functionality is not yet implemented")
   }
 
@@ -114,13 +110,12 @@ class AccountPage extends React.Component{
     const formButton = this.state.profileFormDisabled?(
       <Button 
         content="Update Profile"
-        size="big"
         primary
         floated="right"
         onClick={this.handleProfileButton}
       />
     ):(
-      <Button.Group size="big" floated="right">
+      <Button.Group floated="right">
         <Button
           content="Cancel"
           onClick={this.handleCancelButton}
@@ -137,7 +132,7 @@ class AccountPage extends React.Component{
       return(
         <Segment.Group style={{textAlign: "left"}}>
           <Segment>
-            <Form size = "big">
+            <Form>
               <Form.Field>
                 <label>Email</label>
                 <Input
@@ -159,7 +154,7 @@ class AccountPage extends React.Component{
             </Form>
           </Segment>
           <Segment clearing>
-            <Form size="big" loading={this.state.profileFormLoading} success={this.state.profileFormSuccess}>
+            <Form loading={this.state.profileFormLoading} success={this.state.profileFormSuccess}>
               <Form.Group widths="equal">
                 <Form.Input 
                   label="First name" 
@@ -206,24 +201,7 @@ class AccountPage extends React.Component{
       );
     }else{
       return(
-        <Modal open={true} basic size="mini" closeOnDimmerClick={false}>
-          <Header icon="sign-out" content="Authentication Error" />
-          <Modal.Content content="Please login to continue"/>
-          <Modal.Actions>
-            <Button basic inverted
-              color='red' 
-              icon="remove" 
-              content="Cancel" 
-              size="big"
-              onClick={() => {document.location.replace('/about')}}/>
-            <Button basic inverted
-              color='green' 
-              icon="checkmark" 
-              content="Login" 
-              size="big"  
-              onClick={() => {this.props.dispatch(setShowAuthModal(true));}}/>
-          </Modal.Actions>
-        </Modal>
+        <Redirect to="/about"/>
       );
     }
   }

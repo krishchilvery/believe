@@ -11,20 +11,18 @@ class LogoutModal extends React.Component{
   }
   render(){
     return(
-      <Modal open={this.props.show} basic size="mini">
+      <Modal open={this.props.show} basic>
         <Header icon="sign-out" content="Are you sure you want to logout?"></Header>
         <Modal.Actions>
           <Button basic inverted
             color='red' 
             icon="remove" 
-            content="Cancel" 
-            size="big"
+            content="Cancel"
             onClick={this.props.handleClose}/>
           <Button basic inverted
             color='green' 
             icon="checkmark" 
             content="Proceed" 
-            size="big"  
             onClick={this.logout}/>
         </Modal.Actions>
       </Modal>

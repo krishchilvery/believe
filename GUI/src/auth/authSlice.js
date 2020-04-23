@@ -15,6 +15,7 @@ export const authSlice = createSlice({
             state.isLoggedIn = action.payload;
         },
         setIsAdmin: (state, action) => {
+            console.log(action.payload)
             state.isAdmin = action.payload;
         },
         setShowAuthModal: (state, action) => {
