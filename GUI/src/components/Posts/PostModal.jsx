@@ -13,11 +13,8 @@ class PostModal extends React.Component{
       success: false,
       errorMessage: '',
       error: false,
+      imageFile: ''
     }
-  }
-
-  handleImageUpload = (event) => {
-
   }
 
   handleSubmit = (event) => {
@@ -32,6 +29,7 @@ class PostModal extends React.Component{
       formData.append('title', document.getElementById("formTitle").value)
       formData.append('text', document.getElementById("formText").value)
       formData.append('url', document.getElementById("formUrl").value)
+      formData.append('image',this.state.imageFile)
       axios.patch(url, formData, {headers: headers}).then((response) => {
         this.props.handleSuccess()
         this.props.handleSubmit(response.data)
@@ -44,6 +42,7 @@ class PostModal extends React.Component{
       formData.append('title', document.getElementById("formTitle").value)
       formData.append('text', document.getElementById("formText").value)
       formData.append('url', document.getElementById("formUrl").value)
+      formData.append('image',this.state.imageFile)
       axios.post(url, formData, {headers: headers}).then((response) => {
         this.props.reloadComponent()
         this.handleClose()
@@ -62,6 +61,20 @@ class PostModal extends React.Component{
     })
     this.props.handleClose()
   }
+  
+  handleImageFileChange = (e) => {
+    e.preventDefault();
+    let reader = new FileReader()
+    let file =  e.target.files[0];
+
+    reader.onloadend = () => {
+      this.setState({
+        imageFile: file
+      })
+      this.props.handleChange(e,{name:'image',value:reader.result});
+    }
+    reader.readAsDataURL(file);
+  }
 
   render(){
     return(
@@ -75,7 +88,8 @@ class PostModal extends React.Component{
             <Form.TextArea name="text" label="Text" id="formText" value={this.props.postData.text} onChange={this.props.handleChange}/>
             <Form.Field>
               <label>Image</label>
-              <img src={this.props.postData.image} alt=""/>
+              <img height="200px" width="300px" src={this.props.postData.image} alt=""/>
+              <input type="file" name="image" onChange={this.handleImageFileChange}/>
               <Button icon="image" content="Upload Image" float="right"/>
             </Form.Field>
             <Form.Input name="url" label="Post URL" id="formUrl" value={this.props.postData.url} onChange={this.props.handleChange}/>

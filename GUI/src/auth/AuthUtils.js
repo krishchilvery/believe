@@ -136,7 +136,7 @@ export default function CheckIsLoggedIn(props){
     if(checkAccessToken()){
       dispatch(setIsLoggedIn(true))
       getUserRole().then((response) => {
-        dispatch(setIsAdmin(false))
+        dispatch(setIsAdmin(response.data.is_admin))
       }).catch((error)=>{
         dispatch(setIsAdmin(false))
         dispatch(setIsLoggedIn(false))

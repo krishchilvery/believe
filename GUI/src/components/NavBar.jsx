@@ -6,7 +6,7 @@ import AuthModal from '../auth/AuthModal';
 import { setShowAuthModal, setIsLoggedIn } from '../auth/authSlice';
 import logo from '../logo.svg'
 import LogoutModal from '../auth/LogoutModal';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 
 function mapStateToProps(state){
   const isLoggedIn = state.auth.isLoggedIn
@@ -21,33 +21,10 @@ class NavBar extends React.Component{
   
   constructor(props){
     super(props);
-    var activeItem = ''
-    switch(document.location.pathname){
-      case('/'):
-        activeItem="feed"
-        break
-      case('/about'):
-        activeItem="about"
-        break
-      case('/posts/me'):
-        activeItem="my posts" 
-        break 
-      case('/account'):
-        activeItem=""
-        break
-      default:
-        activeItem=""
-        break  
-    }
     this.state = {
-      activeItem : activeItem,
       authType: 'login',
       showLogoutModal: false
     }
-  }
-
-  handleItemClick = (event, { name }) => {
-    this.setState({ activeItem: name })
   }
 
   handleDropdownClick = (event, {name}) => {
@@ -61,7 +38,7 @@ class NavBar extends React.Component{
 
   handleLogout = () => {
     this.props.dispatch(setIsLoggedIn(false));
-    document.location.assign('/about')
+    this.props.history.push('/about')
   }
 
   toggleLogoutModal = () => {
@@ -99,15 +76,17 @@ class NavBar extends React.Component{
     var AuthMenu = this.props.isLoggedIn?(<this.LogoutDropdownMenu/>):(<this.LoginDropdownMenu/>);
     var PostsButton = this.props.isAdmin?(
       <Dropdown item text="Posts">
-        <Dropdown.Item icon="user" text="My posts" as={Link} to="/posts/me"/>
-        <Dropdown.Item icon="globe" text="Unverified posts" as={Link} to="/posts/unverified"/>
+        <Dropdown.Menu>
+          <Dropdown.Item icon="user" text="My posts" as={Link} to="/posts/me"/>
+          <Dropdown.Item icon="globe" text="Unverified posts" as={Link} to="/posts/unverified"/>
+        </Dropdown.Menu>
       </Dropdown>
-    ):(<Menu.Item
-      name="my posts"
-      active={ this.state.activeItem === "my posts" }
-      onClick={ this.handleItemClick }
-      as={Link}
+    ):(
+    <Menu.Item
+      name="Posts"
+      active={ document.location.pathname === "/posts/me" }
       to="/posts/me"
+      as={Link}
     />)
     return(
       <>
@@ -116,15 +95,13 @@ class NavBar extends React.Component{
             <img src ={logo} alt="Believe" width="45" height="45" className="AppLogo" floated="left"/>
             <Menu.Item
               name="feed"
-              active={ this.state.activeItem === "feed" }
-              onClick={ this.handleItemClick }
+              active={ document.location.pathname === "/" }
               as={Link}
               to=""
             />
             <Menu.Item
               name="about"
-              active={ this.state.activeItem === "about" }
-              onClick={ this.handleItemClick }
+              active={ document.location.pathname === "/about" }
               as={Link}
               to="/about"
             />
@@ -143,4 +120,4 @@ class NavBar extends React.Component{
   }
 }
 
-export default connect(mapStateToProps)(NavBar);
+export default withRouter(connect(mapStateToProps)(NavBar))

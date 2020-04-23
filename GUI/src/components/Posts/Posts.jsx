@@ -34,9 +34,9 @@ class Posts extends React.Component{
     const data = {
       id: event.target.id,
       title: document.getElementById('title'+event.target.id).innerHTML,
-      image: event.target.image,
+      image: document.getElementById('image'+event.target.id).src,
       text: document.getElementById('text'+event.target.id).innerHTML,
-      url: document.getElementById('url'+event.target.id).href
+      url: document.getElementById('url'+event.target.id).href===document.location.href?"":document.getElementById('url'+event.target.id).href
     }
     this.props.handleEdit(data)
   }
@@ -44,7 +44,9 @@ class Posts extends React.Component{
   changeElementData = (postData) => {
     document.getElementById("title"+postData.id).innerHTML = postData.title
     document.getElementById("text"+postData.id).innerHTML = postData.text
+    document.getElementById("image"+postData.id).src = postData.image
     document.getElementById("url"+postData.id).href = postData.url
+    document.getElementById("url"+postData.id).disabled = postData.url?true:false
   }
 
   reloadPosts = () => {
@@ -81,14 +83,14 @@ class Posts extends React.Component{
                   ):(<></>):(<></>)
                 }
                 <Divider/>
-                <img src={post.img} alt=""/>
+                <img id={"image"+post.id} src={post.image} alt=""/>
                 <Feed>
                   <Feed.Content id={"text"+post.id}>
                     {post.text}
                   </Feed.Content>
                   <br/>
                   <Feed.Extra>
-                    <Button as='a' href={post.url} disabled={post.url?false:true} content="Go to post"/>
+                    <Button as='a' id={"url"+post.id} href={post.url} disabled={post.url?false:true} content="Go to post" target="_blank"/>
                   </Feed.Extra>
                 </Feed>
               </Segment>
