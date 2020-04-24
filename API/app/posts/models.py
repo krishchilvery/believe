@@ -10,7 +10,7 @@ def content_file_name(instance, filename):
     return filename
 
 class Post(models.Model):
-    title = models.CharField(max_length=200, blank=False, default=None)
+    title = models.CharField(max_length=200, blank=False)
 
     text = models.TextField(blank=True)
     url = models.URLField(blank=True, null=True)

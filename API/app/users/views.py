@@ -21,4 +21,4 @@ class UserRoleDetailView(RetrieveAPIView):
         user = self.request.user
         return user.profile
     serializer_class = UserRoleSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsOwnerProfileOrReadOnly]
