@@ -1,6 +1,7 @@
 from django.db import models
 from users.models import User
 import os
+# from .storage import PostImageStorage
 
 # Create your models here.
 
@@ -13,7 +14,7 @@ class Post(models.Model):
 
     text = models.TextField(blank=True)
     url = models.URLField(blank=True, null=True)
-    image = models.ImageField(upload_to=content_file_name,blank=True, null=True)
+    image = models.ImageField(upload_to=content_file_name, blank=True, null=True)
 
     owner = models.ForeignKey(User,on_delete=models.SET_NULL, null=True, blank=True, related_name="posts")
     post_date = models.DateTimeField(auto_now_add=True)

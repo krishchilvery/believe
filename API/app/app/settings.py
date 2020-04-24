@@ -157,3 +157,8 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(hours=5),
 }
+
+# CUSTOM_STORAGE_OPTIONS = {
+#     'IMAGE_UPLOAD_URL': 'https://upload.imagekit.io/api/v1/files/upload',
+#     'PRIVATE_API_KEY': 'private_W802xweARp7iHg52T3XXijQTg2E='
+# }
