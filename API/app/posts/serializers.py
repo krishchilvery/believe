@@ -18,3 +18,8 @@ class VerifiedPostSerializer(serializers.ModelSerializer):
         model = Post
         exclude = ('owner','post_date','updated_date')
         read_only_fields = ('verification','verified_by','verified_date')
+
+class PostVerifySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ('verification','verified_by','verified_date')

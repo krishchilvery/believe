@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
 from .models import Post
+from django.utils.timezone import now
 
 # Create your tests here.
 class UserPostListCreateViewTests(APITestCase):
@@ -25,6 +26,7 @@ class UserPostListCreateViewTests(APITestCase):
         response = self.client.post(url, data={'title':'Test Post'})
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['title'], 'Test Post')
+        self.assertEqual(response.data['owner'],self.user.id)
         response = self.client.post(url, data={})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         
@@ -87,7 +89,7 @@ class UserPostViewTests(APITestCase):
         self.assertEqual(response.data['title'], "Test update Post")
 
         response = self.client.get(self.verifiedUrl, {'title':'Test update verified Post'})
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)    
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
     
     def test_delete_posts(self):
         response = self.client.delete(self.url)
@@ -95,4 +97,52 @@ class UserPostViewTests(APITestCase):
 
         response = self.client.delete(self.verifiedUrl)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-    
+
+class PostVerifyViewTests(APITestCase):
+
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create(email="test@test.com", password="foo")
+        self.adminUser = User.objects.create(email="admintest@test.com", password="foo")
+        self.adminUser.profile.is_admin = True
+        self.adminUser.profile.save()
+
+    def test_admin_update_verified_post(self):
+        post = Post(title="Test verified post", verification=Post.VERIFIED)
+        post.save()
+        url = reverse("posts:verify", args=[post.pk])
+        self.client.force_authenticate(user=self.adminUser)
+        response = self.client.patch(url, data={"verification":"V"})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+    def test_admin_update_post_verify(self):
+        post = Post(title="Test post")
+        post.save()
+        url = reverse("posts:verify", args=[post.pk])
+        self.client.force_authenticate(user=self.adminUser)
+        response = self.client.patch(url, data={"verification":"V"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["verification"],"V")
+        self.assertEqual(response.data["verified_by"],self.adminUser.id)
+
+    def test_admin_update_post_random_char(self):
+        post = Post(title="Test post")
+        post.save()
+        url = reverse("posts:verify", args=[post.pk])
+        self.client.force_authenticate(user=self.adminUser)
+        response = self.client.patch(url, data={"verification":"K"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_normal_update_post_verify(self):
+        post = Post(title="Test post")
+        post.save()
+        url = reverse("posts:verify", args=[post.pk])
+        self.client.force_authenticate(user=self.user)
+        response = self.client.patch(url, data={"verification":"V"})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        
+
+
+
+

@@ -1,10 +1,11 @@
 from django.shortcuts import render
-from rest_framework.generics import ListCreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListCreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
-from .serializers import UnverifiedPostSerializer, UserPostSerializer, VerifiedPostSerializer
+from .serializers import UnverifiedPostSerializer, UserPostSerializer, VerifiedPostSerializer, PostVerifySerializer
 from .models import Post
 from .permissions import IsAdmin, IsOwner, IsUnverified
+from django.utils.timezone import now
 
 # Create your views here.
 
@@ -33,3 +34,13 @@ class UserPostView(RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = UserPostSerializer
     permission_classes = [IsOwner, IsAuthenticated, IsUnverified]
+
+class PostVerifyView(UpdateAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostVerifySerializer
+    permission_classes = [IsAdmin, IsAuthenticated, IsUnverified]
+    def perform_update(self, serializer):
+        serializer.save(
+            verified_by=self.request.user,
+            verified_date=now()
+        )
