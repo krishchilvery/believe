@@ -70,10 +70,10 @@ class UserPostViewTests(APITestCase):
         User = get_user_model()
         user = User.objects.create(email="test@test.com", password="foo")
         self.client.force_authenticate(user=user)
-        self.url = '/posts/1'
         self.post = user.posts.create(title="Test Post")
+        self.url = reverse('posts:update',args=[self.post.pk])
         self.verifiedPost = user.posts.create(title="Test verified Post", verification=Post.VERIFIED)
-        self.verifiedUrl = '/posts/2'
+        self.verifiedUrl = reverse('posts:update',args=[self.verifiedPost.pk])
 
     def test_get_posts(self):
         response = self.client.get(self.url)
