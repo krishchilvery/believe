@@ -13,7 +13,7 @@ DATABASES = {
 # Application definition
 
 ALLOWED_HOSTS = [
-    '192.168.0.104',
+    '192.168.0.101',
     'localhost',
 ]
 
@@ -21,7 +21,7 @@ ALLOWED_HOSTS = [
 
 CORS_ORIGIN_WHITELIST = (
     "http://localhost:3000",
-    "http://192.168.0.104:3000",
+    "http://192.168.0.101:3000",
 )
 
 #JWT TOKEN SETTINGS
