@@ -16,7 +16,7 @@ export default function AuthErrorModal(props){
           color='red' 
           icon="remove" 
           content="Cancel"
-          onClick={() => {history.goBack()}}/>
+          onClick={() => {history.replace('/about')}}/>
         <Button basic inverted
           color='green' 
           icon="checkmark" 

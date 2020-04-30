@@ -62,6 +62,20 @@ class AuthModal extends React.Component{
         signUpSuccessState.loginSuccessMessage = "Account successfully created. Please Login";
         this.setState(signUpSuccessState);
         this.props.dispatch(setShowAuthModal({type:'login',show:true}))
+      }).catch((error) => {
+        if(error.response.data.email){
+          this.setState({
+            emailError: error.response.data.email[0]
+          })
+        }else if(error.response.data.password){
+          this.setState({
+            passwordError: error.response.data.password[0]
+          })
+        }else if(error.response.data.re_password){
+          this.setState({
+            re_passwordError: error.response.data.re_password[0]
+          })
+        }
       })
     }
   }

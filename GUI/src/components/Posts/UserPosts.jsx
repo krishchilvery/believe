@@ -92,12 +92,12 @@ class UserPosts extends React.Component{
       return(
         <>
         <Divider/>
-          <Button
-            positive fluid animated="vertical"
-            onClick={this.handleNew}>
-            <Button.Content visible><Icon name='plus'/></Button.Content>
-            <Button.Content hidden>Add a new post</Button.Content>
-          </Button>
+        <Button
+          positive fluid animated="vertical"
+          onClick={this.handleNew}>
+          <Button.Content visible><Icon name='plus'/></Button.Content>
+          <Button.Content hidden>Add a new post</Button.Content>
+        </Button>
         <Posts url = {config.url.API_URL+'/posts/me'}
           editable = {true}
           handleEdit = {this.handleEdit}

@@ -65,7 +65,41 @@ class PostModal extends React.Component{
   handleImageFileChange = (e) => {
     e.preventDefault();
     let reader = new FileReader()
-    let file =  e.target.files[0];
+    var file = e.target.files[0]
+
+    // reader.onloadend = () => {
+
+    //   var image = new Image()
+      
+    //   image.src = reader.result
+      
+    //   image.onload = () => {
+    //     var canvas = document.createElement('canvas')
+    //     const max_size = 544
+    //     var width = image.width
+    //     var height = image.height
+    //     if(width > height){
+    //       if (width > max_size) {
+    //         height *= max_size/width
+    //         width = max_size
+    //       }
+    //     } else {
+    //       if (height > max_size) {
+    //         width *= max_size/height
+    //         height = max_size
+    //       }
+    //     }
+    //     canvas.width = width
+    //     canvas.height = height
+    //     canvas.getContext('2d').drawImage(image, 0, 0, width, height)
+    //     var dataUrl = canvas.toDataURL('image/jpeg')
+    //     var resizedImageFile = this.dataURItoBlob(dataUrl)
+    //     this.setState({
+    //       imageFile: resizedImageFile
+    //     })
+    //     this.props.handleChange(e,{name:'image', value:dataUrl})
+    //   }
+    // }
 
     reader.onloadend = () => {
       this.setState({
@@ -75,6 +109,20 @@ class PostModal extends React.Component{
     }
     reader.readAsDataURL(file);
   }
+
+  // dataURItoBlob(dataURI) {
+  //   var byteString;
+  //   if (dataURI.split(',')[0].indexOf('base64') >= 0)
+  //       byteString = atob(dataURI.split(',')[1]);
+  //   else
+  //       byteString = unescape(dataURI.split(',')[1]);
+  //   var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+  //   var ia = new Uint8Array(byteString.length);
+  //   for (var i = 0; i < byteString.length; i++) {
+  //       ia[i] = byteString.charCodeAt(i);
+  //   }
+  //   return new Blob([ia], {type:mimeString});
+  // }
 
   render(){
     return(
@@ -90,7 +138,8 @@ class PostModal extends React.Component{
               <label>Image</label>
               <img height="200px" width="300px" src={this.props.postData.image} alt=""/>
               <input type="file" name="image" onChange={this.handleImageFileChange}/>
-              <Button icon="image" content="Upload Image" float="right"/>
+              {/* TODO Write better file Upload UI */}
+              {/* <Button icon="image" content="Upload Image" float="right"/> */}
             </Form.Field>
             <Form.Input name="url" label="Post URL" id="formUrl" value={this.props.postData.url} onChange={this.props.handleChange}/>
             <Message

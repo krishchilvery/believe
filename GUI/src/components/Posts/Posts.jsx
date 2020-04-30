@@ -2,6 +2,7 @@ import React from 'react'
 import { Segment, Label, Divider, Button, Feed } from 'semantic-ui-react'
 import axios from 'axios'
 import { getAccessTokenFromCookie } from '../../auth/AuthUtils'
+import './Post.css'
 
 class Posts extends React.Component{
   constructor(props){
@@ -21,13 +22,23 @@ class Posts extends React.Component{
   loadMoreData = (type="next") => {
     const access_token = getAccessTokenFromCookie()
     const headers = {Authorization:'Bearer '+access_token}
-    axios.get(this.state.next_url, {headers: headers}).then((response) => {
-      this.setState({
-        posts: response.data.results,
-        previous_url: response.data.previous,
-        next_url: response.data.next
+    if(type === "next"){
+      axios.get(this.state.next_url, {headers: headers}).then((response) => {
+        this.setState({
+          posts: response.data.results,
+          previous_url: response.data.previous,
+          next_url: response.data.next
+        })
       })
-    })
+    }else{
+      axios.get(this.state.previous_url, {headers: headers}).then((response) => {
+        this.setState({
+          posts: response.data.results,
+          previous_url: response.data.previous,
+          next_url: response.data.next
+        })
+      })
+    }
   }
 
   handleEdit = (event) => {
@@ -55,6 +66,21 @@ class Posts extends React.Component{
     })
     this.loadMoreData()
   }
+
+  handleVerify = (event) => {
+    const id = event.target.id
+    const verification = event.target.name
+    this.props.handleVerify(id, verification)
+  } 
+
+  handleVerified = (id, verification) => {
+    // document.getElementById("segment"+id).remove()
+    var label = document.getElementById("label"+id)
+    label.classList.replace("grey",verification==="V"?"green":"red")
+    label.innerHTML = verification==="V"?"Verified":"Fake"
+    document.getElementById("bg"+id).style.display = "none"
+
+  }
   
   render(){
     
@@ -66,7 +92,7 @@ class Posts extends React.Component{
         {
           posts.map(
             (post, index) => (
-              <Segment raised key={index.toString()}>
+              <Segment raised key={index.toString()} id={"segment"+post.id} clearing>
                 <Label id={"label"+post.id} color={post.verification==="UV"?"grey":post.verification==="V"?"green":"red"} ribbon="right">{post.verification==="UV"?"Unverified":post.verification==="V"?"Verified":"Fake"}</Label>
                 <span>
                   <h3 id={"title"+post.id}>
@@ -77,13 +103,11 @@ class Posts extends React.Component{
                   this.props.editable?post.verification ==="UV"?(
                     <Button icon="pencil" content="Edit" floated="right" onClick={this.handleEdit}
                       id={post.id}
-                      image={post.image}
-                      url={post.url}
                     />
                   ):(<></>):(<></>)
                 }
                 <Divider/>
-                <img id={"image"+post.id} src={post.image} alt=""/>
+                <img id={"image"+post.id} src={post.image} className="PostImages" alt=""/>
                 <Feed>
                   <Feed.Content id={"text"+post.id}>
                     {post.text}
@@ -93,6 +117,27 @@ class Posts extends React.Component{
                     <Button as='a' id={"url"+post.id} href={post.url} disabled={post.url?false:true} content="Go to post" target="_blank"/>
                   </Feed.Extra>
                 </Feed>
+                {
+                  this.props.admin?post.verification ==="UV"?(
+                    <Button.Group floated="right" id={"bg"+post.id}>
+                      <Button
+                        negative
+                        name="F"
+                        content="Fake"
+                        onClick={this.handleVerify}
+                        id={post.id}
+                      />
+                      <Button.Or />
+                      <Button 
+                        positive
+                        name="V"
+                        content="Verify"
+                        onClick={this.handleVerify}
+                        id={post.id}
+                      />
+                    </Button.Group>
+                  ):(<></>):(<></>)
+                }
               </Segment>
             )
           )
